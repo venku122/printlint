@@ -1,0 +1,6 @@
+{
+  "filaments": [
+    {"index": 1, "color": "#000000", "material": "PLA", "tool": 0, "ams_slot": "A1"},
+    {"index": 2, "color": "#FF0000", "material": "PLA", "tool": 0, "ams_slot": "A2"}
+  ]
+}

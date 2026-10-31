@@ -1,0 +1,8 @@
+{
+  "native_plugin": "verified",
+  "manual_action": "verified_in_Orca_GUI_zero_findings_on_cube",
+  "automatic_hook": "verified_FatalError_block_and_clean_reslice_after_default_restore",
+  "headless_x2d_bambu": "process_exit_0_with_upstream_tool_parser_errors",
+  "headless_x2d_orca": "verified",
+  "official_3mf_mcp": "built_18_upstream_tests_and_real_stdio_roundtrip_verified"
+}

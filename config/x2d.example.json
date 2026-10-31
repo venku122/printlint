@@ -1,0 +1,32 @@
+{
+  "printer": "Bambu Lab X2D",
+  "printer_profile": "Bambu Lab X2D 0.4 nozzle",
+  "envelope_mm": [
+    256,
+    256,
+    261.0
+  ],
+  "nozzles_mm": [
+    0.4,
+    0.4
+  ],
+  "tool_x_min_mm": [
+    0,
+    20.5
+  ],
+  "extrusion_width_mm": 0.42,
+  "layer_height_mm": 0.2,
+  "material": "PLA",
+  "min_wall_mm": 0.84,
+  "overhang_degrees": 45,
+  "max_purge_ratio": 1.0,
+  "max_filament_changes": 500,
+  "surface_policy": "warning",
+  "thickness_samples": 512,
+  "source": "/Applications/BambuStudio.app/Contents/Resources/profiles/BBL",
+  "profile_provenance": {
+    "machine": "machine/Bambu Lab X2D 0.4 nozzle.json",
+    "process": "process/0.20mm Standard @BBL X2D.json",
+    "resolved_process_parent": "fdm_process_dual_0.20_nozzle_0.4"
+  }
+}

@@ -1,0 +1,22 @@
+diff --git a/pyproject.toml b/pyproject.toml
+index 82dc727..9763b29 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -7,8 +7,7 @@ name = "mmu-remapper"
+ version = "0.1.0"
+ description = "Remap extruder/filament assignments in PrusaSlicer, Bambu Studio, and Orca Slicer 3MF files"
+ readme = "README.md"
+-license = {text = "MIT"}
+-long_description_content_type = "text/markdown"
++license = "MIT"
+ license-files = ["LICENSE"]
+ requires-python = ">=3.8"
+ authors = [
+@@ -18,7 +17,6 @@ keywords = ["3d-printing", "3mf", "prusaslicer", "bambu", "orca-slicer", "mmu",
+ classifiers = [
+     "Development Status :: 4 - Beta",
+     "Intended Audience :: End Users/Desktop",
+-    "License :: OSI Approved :: MIT License",
+     "Programming Language :: Python :: 3",
+     "Programming Language :: Python :: 3.8",
+     "Programming Language :: Python :: 3.9",

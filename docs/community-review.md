@@ -1,0 +1,9 @@
+# Dependency review
+
+Official 3MF MCP: pinned official repository; npm lockfile; 18 upstream tests pass and TypeScript build succeeds. Read-only stdio inspection tested on a real X2D configured project for compliance, model dimensions, objects, build transforms, materials/colors and findings. This is alpha software; strict vendor-extension failures are distinct from unreadable core packages. Viewer is not required and has not been enabled or verified.
+
+MMU Remapper: pinned source, inspection API exercised on painted 3MF with SHA-256 before/after checking elsewhere in the suite. `mmu-remap --inspect` extracts to a temporary directory and exits before remapping. PrintLint imports only its pure codec. Default workflows never call remap. The package's pyproject had an invalid legacy description field and incompatible license metadata; a recorded metadata-only patch makes current setuptools accept it. No remapping algorithm was changed. Simple paint tokens are supported; structural recursive blobs are explicitly opaque.
+
+3D Print Validator: small single-file project reviewed before optional integration. No network code or arbitrary evaluation found in its STL/3MF analysis path. Optional STEP loading involves additional CAD functionality and is not enabled. It checks the largest body for integrity/thickness, may miss defects in smaller bodies, samples randomly, swallows some ray failures into empty thickness results and prints ANSI progress before JSON. The wrapper isolates it in a subprocess with a timeout and strips progress before parsing JSON. Its process exit status and score are retained only as advisory data; they do not determine core pass/fail. Core Trimesh checks cover every build mesh separately instead.
+
+No automatic repairs, remaps, profile edits, network services or printer controls were added.

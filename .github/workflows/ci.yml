@@ -1,0 +1,26 @@
+name: Portable validation
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  portable:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build pinned image and run regression suites
+        run: docker build --progress plain -t printlint:ci .
+      - name: Read-only, offline geometry and 3MF checks
+        shell: bash
+        run: |
+          for input in cube.stl core-colored.3mf x2d-cube.3mf; do
+            docker run --rm --network none --read-only --tmpfs /tmp:rw,nosuid,nodev,size=256m \
+              --mount "type=bind,src=$PWD/tests/fixtures,dst=/models,readonly" \
+              printlint:ci check "$input" --json
+          done
+          docker run --rm --network none --read-only --tmpfs /tmp:rw,nosuid,nodev,size=256m \
+            --mount "type=bind,src=$PWD/tests/fixtures,dst=/models,readonly" \
+            printlint:ci colors painted.3mf --json

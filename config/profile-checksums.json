@@ -1,0 +1,10 @@
+{
+  "config/filaments.example.json": "922f674dbb9c429c35b079bd67d6bb0df991d303822c4431c92c31ae1e6948c0",
+  "config/x2d.example.json": "c83189c262d28414391675939e58060b57dd5703c1f3e7c189f1b079ca34b7c7",
+  "config/bambu/filament.json": "ebbdd3c8a60dc9ce1cdac912b6160d14756621c810efa7a43433667dc3a23701",
+  "config/bambu/process.json": "1502b7ae48883168cf998f1c70374d56fe288a42cb20be1291440bf76a15fc63",
+  "config/bambu/machine.json": "fff77bd214149df76ab7b639838eba51d16ddb26cae63aa27fa95ac522f8afe1",
+  "config/orca/filament.json": "a3858e634d0b4ee7713580adb6a46efc15816a487c5b063f46320b53c171479e",
+  "config/orca/process.json": "1d49140b53bf3d069b588ec0b770668e4bfa970c48ca6e3f3dce52ab4b583fb4",
+  "config/orca/machine.json": "779f97d75dbeba6624c4942cc24efb8e8b863bc48b90e67bc8c815d247c80c2b"
+}

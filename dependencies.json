@@ -1,0 +1,32 @@
+{
+  "3mf-mcp": {
+    "revision": "d8327ba8ef4e3e96330f429a5c8bee122d40400c",
+    "url": "https://github.com/3MFConsortium/3mf-mcp.git"
+  },
+  "mmu-remapper": {
+    "revision": "b9ec4081be09062c9c9987fe1caf366377776617",
+    "url": "https://github.com/monomyth/mmu-remapper.git",
+    "local_patch": "config/mmu-packaging.patch"
+  },
+  "3d-print-validator": {
+    "revision": "07052d2773bade2aa6ea518da56ed53c3c26b264",
+    "url": "https://github.com/oriolescserr/3d-print-validator.git"
+  },
+  "orca-source": {
+    "revision": "345efec64c7b95a05ce5cf96df0dde66a158835c",
+    "url": "https://github.com/OrcaSlicer/OrcaSlicer.git"
+  },
+  "orca-wiki": {
+    "revision": "d531ecf7793ec3e24caa3b134d803694dc436065",
+    "url": "https://github.com/OrcaSlicer/OrcaSlicer.wiki.git"
+  },
+  "benchy": {
+    "revision": "b542785f9642ab39db8a778a0ccc934b3ebd829a",
+    "url": "https://github.com/CreativeTools/3DBenchy",
+    "sha256": "6ab57f1c3f8e86bc3cbd302c6fa6270acf06277c6335454e922419c25d42e97e"
+  },
+  "orca-beta": {
+    "url": "https://github.com/OrcaSlicer/OrcaSlicer/releases/download/v2.5.0-beta/OrcaSlicer_Mac_universal_V2.5.0-beta.dmg",
+    "sha256": "6543844b23b05318bc98312a8818087ffb9364bdc61131ff9c53017e8d73cf7a"
+  }
+}
