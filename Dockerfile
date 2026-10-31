@@ -6,7 +6,7 @@ COPY --from=node /usr/local/bin/node /usr/local/bin/node
 COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=uv /uv /usr/local/bin/uv
 RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
-    && apt-get update && apt-get install -y --no-install-recommends git ca-certificates \
+    && apt-get update && apt-get install -y --no-install-recommends git ca-certificates libstdc++6 libatomic1 \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /opt/printlint
 ENV UV_PYTHON_DOWNLOADS=never UV_LINK_MODE=copy
@@ -20,7 +20,7 @@ COPY docs/validation-status.json docs/validation-status.json
 RUN ./tools/setup.sh
 
 FROM python:3.12.16-slim-bookworm@sha256:e697c81897302a4c4333bade000d98038fbb21eb064f8ee1fd42d02ebcd9d337 AS runtime
-RUN apt-get update && apt-get install -y --no-install-recommends libstdc++6 ca-certificates \
+RUN apt-get update && apt-get install -y --no-install-recommends libstdc++6 libatomic1 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=build /usr/local/bin/node /usr/local/bin/node
 COPY --from=build /opt/printlint /opt/printlint
