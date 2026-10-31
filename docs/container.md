@@ -30,3 +30,5 @@ The build runs the official MCP tests/build and all portable PrintLint tests. Na
 The optional community advisory source is included. The runtime contains no npm/uv executable, Git, slicer apps or credentials; Node plus the built MCP and Python environment are enough for static checks. Vendor license files remain in their source trees. No image is pushed to a registry by default.
 
 Local Docker engine requests timed out during the initial setup; the Dockerfile is verified through the repository CI when that run passes. No local image-build success is implied by the native tests.
+
+Verified Linux/amd64 acceptance: [GitHub CI run](https://github.com/venku122/printlint/actions/runs/41232202815) for source commit `1d30e440ca522c30a45434d012118e0363ba14ac`. Official MCP: 18 tests passed; portable PrintLint: 48 passed, 4 native-only skips. Image build and read-only/no-network STL, standard/vendor 3MF and painted-color smoke checks passed. CI image ID: `sha256:77c402bfae678de195abeb71af22069c46352f9a804057d4dae96754d47d48cf`. This image was not published to a registry. Linux/arm64 execution remains unverified.

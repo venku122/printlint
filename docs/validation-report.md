@@ -20,7 +20,7 @@ Coverage includes cube; original Benchy with reported degenerate/open-boundary a
 
 Private GitHub source tracking and a digest-pinned Dockerfile/CI workflow were added. Native regression coverage now includes automatic preflight gates, PATH-based Node selection and Orca packaged-preset discovery. An initial native rerun caught the adapter treating binary `.opc` presets as missing; it now delegates native cache resolution to Orca and still rejects mismatched effective output profiles. The complete final native suite passed (52 tests), ruff passed and doctor returned zero.
 
-The local Docker engine timed out on build/daemon requests, so no local container build success is claimed. GitHub CI builds the image, runs the upstream MCP and portable Python suites, and tests static checks with read-only models and networking disabled. Container acceptance must be assessed from that CI run. macOS application/GUI tests are outside the container's scope.
+The local Docker engine timed out on build/daemon requests, so no local container build success is claimed. GitHub CI builds the image, runs the upstream MCP and portable Python suites, and tests static checks with read-only models and networking disabled. Container acceptance subsequently passed on Linux/amd64 in [CI run 41232202815](https://github.com/venku122/printlint/actions/runs/41232202815): official MCP 18 passed, portable PrintLint 48 passed/4 native-only skips, plus read-only/no-network smoke checks. The first CI attempt exposed a missing Node `libatomic1` dependency, fixed in both build/runtime stages before the successful run. Linux/arm64 execution remains unverified. macOS application/GUI tests are outside the container's scope.
 
 ## Real offline slicing
 
