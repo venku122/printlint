@@ -1,6 +1,6 @@
 # Third-party provenance
 
-PrintLint's own CLI/plugin sources are tracked here; no license for original project code has been selected for public redistribution. This repository is private. Upstream components retain their own licenses.
+PrintLint's own CLI/plugin sources are tracked here; no license for original project code has been selected for public redistribution. Upstream components retain their own licenses.
 
 - `config/bambu/` and embedded Bambu fixture settings: resolved official Bambu Studio X2D presets, from the installed 02.08.02.61 resource tree. Bambu Studio: https://github.com/bambulab/BambuStudio (AGPL-3.0; included in LICENSES/AGPL-3.0.txt).
 - `config/orca/` and embedded Orca fixture settings: official OrcaSlicer X2D presets, from 2.5.0-beta. OrcaSlicer: https://github.com/OrcaSlicer/OrcaSlicer; source revision and wiki revision recorded in dependencies.json (AGPL-3.0).

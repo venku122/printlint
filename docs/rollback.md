@@ -8,7 +8,7 @@ To remove this toolchain:
 
 1. Quit the experimental beta.
 2. `codex mcp remove 3mf` removes only the new MCP registration. Do not replace the entire Codex config from backup if it now contains other changes.
-3. Remove `/Users/tjt/.local/bin/printlint` (the new launcher only).
+3. Remove `~/.local/bin/printlint` (the new launcher only).
 4. Remove `/Applications/OrcaSlicer-PrintLint-Beta.app` (the separate experimental copy only).
 5. Remove this `printlint` directory after preserving any wanted reports/fixtures. Its uv environment, vendor clones, plugin data and experimental profiles are all inside it.
 

@@ -93,8 +93,16 @@ def render(r, fmt="text"):
         f"PrintLint: {'execution failure' if r['exit_code'] == 2 else 'validation errors' if r['exit_code'] else 'passed'}"
     ]
     for d in r["diagnostics"]:
+        status = " " + d["status"] if "status" in d else ""
+        location = d.get("affected_geometry", {}).get("points_mm")
+        detail = d["measured_value"]
+        if location:
+            points = d["evidence"].get("unmet_points_mm") or location
+            detail = f"XYZ mm {points[:3]}" + (
+                f" (+{len(points) - 3} more)" if len(points) > 3 else ""
+            )
         lines.append(
-            f"{d['severity'].upper()} {d['rule_id']} [plate={d['plate']}, object={d['object']}]: {d['description']} ({d['measured_value']})\n  → {d['corrective_action']}"
+            f"{d['severity'].upper()} {d['rule_id']}{status} [plate={d['plate']}, object={d['object']}]: {d['description']} ({detail})\n  → {d['corrective_action']}"
         )
     if r.get("statistics"):
         lines.append(json.dumps(r["statistics"], indent=2))

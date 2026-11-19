@@ -71,3 +71,19 @@ def test_real_high_purge_statistics_warn():
     assert stats["filament_changes"] == 50
     assert stats["purge_volume_mm3"] > 19000
     assert "SLICE.PURGE" in {d["rule_id"] for d in r["diagnostics"]}
+
+
+def test_filament_density_csv_is_equivalent_to_project_array():
+    from printlint.slicer import verify_profile
+
+    r = new_report()
+    verify_profile({"filament_density": ["1.26", "1.30"]}, "; filament_density = 1.26,1.30\n", r)
+    assert not r["diagnostics"]
+
+
+def test_changed_filament_density_still_rejected():
+    from printlint.slicer import verify_profile
+
+    r = new_report()
+    verify_profile({"filament_density": ["1.26", "1.30"]}, "; filament_density = 1.26,1.20\n", r)
+    assert any(d["rule_id"] == "SLICE.PROFILE" for d in r["diagnostics"])

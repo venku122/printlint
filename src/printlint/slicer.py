@@ -11,6 +11,7 @@ from pathlib import Path
 
 from .core import check
 from .policy import load_policy
+from .profile_intent import compare_expectations, gcode_settings, read_config
 from .report import add, finish, new_report
 from .statistics import inspect_statistics, parse_gcode
 
@@ -19,6 +20,40 @@ SLICERS = {
     "orca": Path("/Applications/OrcaSlicer-PrintLint-Beta.app/Contents/MacOS/OrcaSlicer"),
     "orca-stable": Path("/Applications/OrcaSlicer.app/Contents/MacOS/OrcaSlicer"),
 }
+
+X2D_END_PROFILE = Path(
+    "/Applications/BambuStudio.app/Contents/Resources/profiles/BBL/machine/"
+    "Bambu Lab X2D 0.4 nozzle template machine_end_gcode.json"
+)
+
+
+def is_stock_end_sentinel(line, cfg, gcodes):
+    """Recognize only verified stock X2D end-of-job AMS deselection commands."""
+    match = re.search(r"Invalid T command \((T65279|T65535)\)\.", line)
+    if not match or cfg.get("printer_model") != "Bambu Lab X2D":
+        return False
+    try:
+        stock = json.loads(X2D_END_PROFILE.read_text())["machine_end_gcode"]
+        if cfg.get("machine_end_gcode", "").strip() != stock.strip() or not gcodes:
+            return False
+        token = match[1]
+        number = token[1:]
+        for path in gcodes:
+            text = path.read_text(errors="replace")
+            text = text.split("; EXECUTABLE_BLOCK_START", 1)[-1]
+            positions = list(re.finditer(r"^" + token + r"\s*$", text, re.M))
+            if len(positions) != 1:
+                return False
+            pos = positions[0].start()
+            if pos <= max(text.rfind("; FEATURE:"), text.rfind("; pull back filament to AMS")):
+                return False
+            if not re.search(r"^M620 S" + number + r"\b", text[max(0, pos - 150) : pos], re.M):
+                return False
+            if not re.search(r"^M621 S" + number + r"\b", text[pos : pos + 150], re.M):
+                return False
+        return True
+    except (OSError, ValueError, KeyError):
+        return False
 
 
 def orca_statistics(raw):
@@ -60,7 +95,9 @@ def orca_statistics(raw):
     }
 
 
-def slice_project(path, slicer, output=None, policy=None, strict=False, manifest=None):
+def slice_project(
+    path, slicer, output=None, policy=None, strict=False, manifest=None, dfam=False, expected=None
+):
     r = new_report()
     path = Path(path)
     try:
@@ -157,7 +194,12 @@ def slice_project(path, slicer, output=None, policy=None, strict=False, manifest
         copy = dest / "input.3mf"
         shutil.copy2(path, copy)
         # Validate the exact copy that the slicer will receive, not a potentially changing source.
-        preflight = check(copy, policy=policy, manifest=manifest, strict=strict)
+        preflight = check(copy, policy=policy, manifest=manifest, strict=strict, dfam=dfam)
+        if expected and preflight["exit_code"] != 2:
+            with zipfile.ZipFile(copy) as archive:
+                cfg = read_config(archive)
+            compare_expectations(preflight, expected, cfg, "configured_input")
+            finish(preflight, strict)
         r["preflight"] = preflight
         r["diagnostics"].extend(preflight["diagnostics"])
         (dest / "preflight.json").write_text(json.dumps(preflight, indent=2, sort_keys=True))
@@ -189,6 +231,8 @@ def slice_project(path, slicer, output=None, policy=None, strict=False, manifest
         ]
         if slicer == "orca":
             cmd += ["--export-statistics"]
+        if slicer == "bambu":
+            cmd += ["--export-3mf", "sliced.3mf"]
         if slicer.startswith("orca"):
             cmd += ["--logfile", str(dest / "slicer-debug.log")]
         cmd += [str(copy)]
@@ -206,16 +250,18 @@ def slice_project(path, slicer, output=None, policy=None, strict=False, manifest
             "source_unchanged": hashlib.sha256(path.read_bytes()).hexdigest() == digest,
             "project_presets": {k: cfg.get(k) for k in keys},
         }
+        gcodes = sorted(dest.glob("plate_*.gcode"))
         for line in log.splitlines():
             if re.search(
                 r"warning|\[error\]|\bfatal\b|not in range|run found error|got error when validate|Version Check:.*not supported",
                 line,
                 re.I,
             ):
+                stock_sentinel = slicer == "bambu" and is_stock_end_sentinel(line, cfg, gcodes)
                 add(
                     r,
-                    "SLICE.DIAGNOSTIC",
-                    log_severity(line),
+                    "SLICE.VENDOR_END_SENTINEL" if stock_sentinel else "SLICE.DIAGNOSTIC",
+                    "warning" if stock_sentinel else log_severity(line),
                     line[:1000],
                     action="Review the full process log; correct incompatible settings before using the artifact.",
                 )
@@ -240,6 +286,11 @@ def slice_project(path, slicer, output=None, policy=None, strict=False, manifest
             text = g.read_text(errors="replace")
             parsed = parse_gcode(text, slicer)
             outputcfg = verify_profile(cfg, text, r)
+            if expected:
+                values, ambiguous = gcode_settings(text)
+                compare_expectations(
+                    r, expected, values, "gcode", plate=g.stem, ambiguous=ambiguous
+                )
             statsfile = g.with_suffix(".statistics.json")
             if statsfile.exists():
                 parsed.update(orca_statistics(json.loads(statsfile.read_text())))
@@ -256,6 +307,16 @@ def slice_project(path, slicer, output=None, policy=None, strict=False, manifest
             parsed["resolved_profile"] = outputcfg
             r["statistics"]["plates"].append(parsed)
             inspect_statistics(parsed, p, r)
+        if dfam:
+            from .dfam import audit
+
+            archive = dest / "sliced.3mf"
+            outputs = [archive] if archive.is_file() else gcodes
+            for artifact in outputs:
+                evidence = audit(artifact, strict=strict)
+                r["diagnostics"].extend(evidence["diagnostics"])
+                if evidence.get("execution_failure"):
+                    r["execution_failure"] = True
         if not r["slicer"]["source_unchanged"]:
             raise RuntimeError("Input file unexpectedly changed")
     except (
@@ -306,7 +367,7 @@ def verify_profile(cfg, text, report):
     def norm(value, key):
         if isinstance(value, list):
             items = [str(x).strip().strip('"') for x in value]
-        elif key == "printable_area" or key == "nozzle_diameter":
+        elif key in ("printable_area", "nozzle_diameter", "filament_density"):
             items = str(value).split(",")
         elif key.startswith("filament_"):
             items = [v.strip().strip('"') for v in str(value).split(";")]

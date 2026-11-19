@@ -1,6 +1,8 @@
 # PrintLint for macOS / X2D
 
-Local, read-only STL/3MF validation, vendor color inspection, official lib3mf compliance, and actual offline slicing. Installed in `/Users/tjt/src/3d_printing/printlint` alongside the existing CAD workspace. No printer connection, upload, movement, heating or print submission is implemented.
+Local, read-only STL/3MF validation, vendor color inspection, official lib3mf compliance, and actual offline slicing. No printer connection, upload, movement, heating or print submission is implemented.
+
+Start with the [setup guide](QUICKSTART.md) for macOS, Windows, or Linux.
 
 ## Daily use
 
@@ -24,11 +26,44 @@ Output directories must be empty. Slicing copies the input into the output direc
 
 Exit codes: **0** no blocking errors (warnings may exist), **1** validation errors, **2** execution/infrastructure failure. `--strict` makes warnings fail. Every diagnostic includes rule, severity, object/plate when known, measurement, explanation and corrective action. A pass is a static preflight, not authorization or proof of successful printing.
 
-The launcher is `/Users/tjt/.local/bin/printlint`. Equivalent: `uv run --project /Users/tjt/src/3d_printing/printlint printlint ...`. Python is project-local, not system Python.
+From the extracted project folder, prefix these commands with `uv run --locked` to use its pinned environment.
+
+Use `check --dfam`, `slice --dfam` and `printlint dfam` for DfAM mesh, native role and critical-feature witness evidence. See [DfAM evidence and witness specifications](docs/dfam.md).
+
+## Job-specific profile checks and final receipts
+
+Write required settings in a separate JSON file. A top-surface speed list selects the
+first one or more configured speed slots in order. Confirm which slot applies to the
+active nozzle and flow variant. This example requires five bottom layers and 75 mm/s
+in the first speed slot.
+
+```json
+{"bottom_shell_layers": 5, "top_surface_speed": [75]}
+```
+
+```sh
+printlint check project.3mf --expect-profile expected.json --json
+printlint slice project.3mf --slicer bambu --output /tmp/fresh-slice --expect-profile expected.json --json
+printlint inspect-final /tmp/fresh-slice/sliced.3mf --expect-profile expected.json --report /tmp/final-details.json --json
+```
+
+The slice gate checks the exact copied configuration before launch, then compares
+each emitted plate's resolved G-code settings. `inspect-final` records the final
+archive and executable plate hashes, settings checks, estimates, color routing, and
+diagnostic counts. Use `--plate` to select a plate for the settings receipt, and
+`--dfam-spec` for a hash-bound feature audit of its source archive. Settings establish
+recorded profile values. Use actual toolpaths and witnesses to establish deposition and
+feature evidence.
+
+For a G-code-only Studio export, supply a separate compliant `--validation-3mf`
+containing byte-identical G-code for every plate. The receipt scopes geometry and
+color evidence to that wrapper. A witness spec in this mode binds to the wrapper
+hash. Review its geometry and source correspondence. Keep native preview, camera,
+physical AMS identity, and acceptance evidence with the final artifact.
 
 ## Reproducibility and upkeep
 
-Source and native plugin are tracked in the private `venku122/printlint` repository. A monthly read-only update check reports worthwhile changes without upgrading. See [maintenance](docs/maintenance.md).
+Source and native plugin are tracked in [`venku122/printlint`](https://github.com/venku122/printlint). A monthly read-only update check reports worthwhile changes without upgrading. See [maintenance](docs/maintenance.md).
 
 A digest-pinned [Docker image](docs/container.md) runs geometry, color and official 3MF checks. Keep the native uv/script setup for actual macOS slicing and Orca plugin execution.
 
@@ -48,7 +83,9 @@ Exact upstream revisions, DMG checksum and source URLs are in `dependencies.json
 
 STL and transformed/component 3MF geometry, bounded ZIP/XML reading, official compliance, simple painted face assignments, object/volume filament assignments, palette/manifests, unknown physical AMS state, JSON/SARIF/exit codes, deterministic geometry sampling, and real X2D offline slicing with both apps. Orca exports schema-versioned statistics, including actual purge/prime-tower and per-layer/object data. A two-color X2D test produced 50 changes and a 19.51 purge/model ratio and triggered the configured warning.
 
-Bambu's process completes with X2D settings but its G-code parser logs `Invalid T command (T65279)` / `(T65535)` on the full embedded preset. PrintLint retains those as errors; it does not certify this output as clean. Orca's separate native fixture slices cleanly. Models are not sent to a printer.
+Bambu's estimator logs `Invalid T command (T65279)` / `(T65535)` for stock X2D AMS deselection commands. PrintLint retains these as warnings only when the embedded machine-end G-code exactly matches the installed X2D preset and the output contains each command once, within its matching M620/M621 end-of-job block after the last printed feature. Other commands, custom end scripts, duplicates, and other printers remain errors. Bambu slices also export `sliced.3mf` for preview. Models are not sent to a printer.
+
+Large painted projects may generate hundreds of thousands of repeated lib3mf vendor-attribute warnings. The local MCP client uses a bounded 128 MiB response buffer and groups identical warnings with occurrence counts; non-strict errors and strict compliance results are retained. This avoids mistaking an oversized diagnostic response for an unreadable mesh.
 
 **Native plugin GUI acceptance is verified:** the manual action reported zero findings; an eight-triangle budget blocked the 12-triangle cube with `ORCA.COMPLEXITY`; restoring 10,000,000 allowed fresh slices and the normal 0.20 mm preview. Geometry part bytes are unchanged. See [plugin steps](docs/slicer-integration.md).
 

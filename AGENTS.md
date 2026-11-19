@@ -7,3 +7,5 @@ Apply the parent default validation workflow to every CAD export and imported pr
 Do not commit evidence/, vendor environments, private configuration, printer credentials, personal project metadata or screenshots. Synthetic test fixtures and official profile snapshots are safe local implementation artifacts. Record source revisions in dependencies.json and keep tests/fixtures/statistics labelled as actual captured slicer output.
 
 Native plugin GUI acceptance is recorded in docs/validation-status.json and evidence/orca-native/native-acceptance.json. Future API/plugin changes require rechecking the actual manual action, deliberate FatalError slice block and clean reslice; unit tests alone are insufficient.
+
+For DfAM changes, follow [the DfAM evidence workflow](docs/dfam.md). Keep native path evidence tied to artifact hashes and limit automation to observable geometry and documented profile evidence. Keep personal case inputs and replay outputs outside the public PrintLint repository.

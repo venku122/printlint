@@ -1,6 +1,6 @@
 # Installed Python versions
 
-Environment: `/Users/tjt/src/3d_printing/printlint/.venv` (Python 3.12.16).
+Environment: `.venv` (Python 3.12.16).
 
 | Package | Version |
 |---|---|

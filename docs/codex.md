@@ -1,9 +1,9 @@
 # Codex / official 3MF MCP
 
-Registered with the installed Codex 0.166.0 CLI:
+After setup, run this from the PrintLint folder:
 
 ```sh
-codex mcp add 3mf -- /opt/homebrew/bin/node /Users/tjt/src/3d_printing/printlint/vendor/3mf-mcp/dist/cli.js
+codex mcp add 3mf -- node "$PWD/vendor/3mf-mcp/dist/cli.js"
 codex mcp get 3mf --json
 ```
 
@@ -21,12 +21,12 @@ The `--full` probe loads and inspects the model, lists mesh objects/build transf
 
 Local visual rendering is optional and has not been enabled: structural validation works without browser/viewer dependencies. Review 3D appearance in the existing CAD/slicer tools. Do not equate a structurally nonempty color palette with artistic correctness.
 
-Default agent workflow (persisted in `/Users/tjt/.codex/AGENTS.md` and workspace `AGENTS.md`; new Codex runs load the global instructions):
+Default agent workflow:
 
 1. Keep parametric CAD source and export alongside it.
 2. Run `printlint check` and `printlint colors` with JSON output; supply a local manifest if known.
 3. Repair source defects, re-export and re-run. Do not silently fix the input or remap colors.
-4. Save an explicit X2D project in the intended slicer and run `printlint slice ... --slicer bambu|orca` into a fresh directory. Both paths run full preflight before launching the slicer and save `preflight.json`. Errors and infrastructure failures block launch; warnings block with `--strict`. Policy and manifest apply to preflight. Direct GUI/MCP slicing requires a separate full check on the same final project; recheck after geometry, placement, filament or tool changes. Bambu Studio's manual Slice button is not intercepted; the Orca native hook is supplemental and process-specific.
+4. Save a project with the intended printer, process, and filament settings in the intended slicer and run `printlint slice ... --slicer bambu|orca` into a fresh directory. Both paths run full preflight before launching the slicer and save `preflight.json`. Errors and infrastructure failures block launch; warnings block with `--strict`. Policy and manifest apply to preflight. Direct GUI/MCP slicing requires a separate full check on the same final project; recheck after geometry, placement, filament or tool changes. Bambu Studio's manual Slice button is not intercepted; the Orca native hook is supplemental and process-specific.
 5. Inspect diagnostics, material use, purge ratio, tool assignments, supports/islands and first-layer preview.
 6. Describe the result as ready for **manual** printing only when relevant findings are resolved. Printer state, bed/plate, actual AMS spools and time-lapse send option are a separate live/manual check.
 

@@ -12,9 +12,10 @@ from .policy import load_policy, validate_manifest
 from .report import add, finish, new_report
 
 
-def run(path, policy=None, manifest=None, strict=False, geometry=True):
+def run(path, policy=None, manifest=None, strict=False, geometry=True, dfam=False):
     r = new_report()
     path = Path(path)
+    profile = {}
     try:
         p = load_policy(policy) if not isinstance(policy, dict) else policy
         validate_manifest(manifest)
@@ -37,6 +38,7 @@ def run(path, policy=None, manifest=None, strict=False, geometry=True):
                 # Invalid input is a validation error; infrastructure is handled outside package parsing.
                 add(r, "PKG.INVALID", "error", str(e))
                 return finish(r, strict)
+            profile = data["config"]
             compliance(path, r)
             inspect_colors(data, p, r, manifest)
             if geometry:
@@ -78,6 +80,10 @@ def run(path, policy=None, manifest=None, strict=False, geometry=True):
             str(e),
             action="Check input paths, policy and installed dependencies.",
         )
+    if dfam and r["geometry"]:
+        from .dfam import add_mesh_findings
+
+        add_mesh_findings(r, p, profile)
     return finish(r, strict)
 
 
